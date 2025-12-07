@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# Script to run Experiment 1: Link protocol (for Table 1)
+# This experiment runs the end-to-end benchmark for the Link protocol
+
+set -e  # Exit on error
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+print_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Get the script directory and repository root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$SCRIPT_DIR"
+RESULTS_DIR="$REPO_ROOT/results"
+
+# Create results directory if it doesn't exist
+print_info "Creating results directory if it doesn't exist..."
+mkdir -p "$RESULTS_DIR"
+
+# Check if we're in the repository root
+if [ ! -d "ark-iesp" ]; then
+    print_error "This script must be run from the repository root directory"
+    exit 1
+fi
+
+# Check if the experiment directory exists
+if [ ! -d "ark-iesp/bench/e2e" ]; then
+    print_error "Experiment directory ark-iesp/bench/e2e not found"
+    exit 1
+fi
+
+# Check if Rust is installed
+if ! command -v cargo &> /dev/null; then
+    print_error "Cargo is not installed. Please run setup.sh first."
+    exit 1
+fi
+
+# Generate output filename with timestamp
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+OUTPUT_FILE="$RESULTS_DIR/experiment_1_link_protocol_${TIMESTAMP}.txt"
+
+print_info "Starting Experiment 1: Link protocol (for Table 1)"
+print_info "Output will be saved to: $OUTPUT_FILE"
+print_info ""
+
+# Change to the experiment directory
+cd "$REPO_ROOT/ark-iesp/bench/e2e"
+
+# Run the experiment and capture output
+print_info "Running: RUST_LOG=info cargo run --release"
+print_info "This may take a while..."
+
+# Run the command and capture both stdout and stderr
+{
+    echo "=========================================="
+    echo "Experiment 1: Link protocol (for Table 1)"
+    echo "Timestamp: $(date)"
+    echo "Command: RUST_LOG=info cargo run --release"
+    echo "=========================================="
+    echo ""
+    
+    RUST_LOG=info cargo run --release 2>&1
+    
+    echo ""
+    echo "=========================================="
+    echo "Experiment completed at: $(date)"
+    echo "=========================================="
+} | tee "$OUTPUT_FILE"
+
+print_info ""
+print_info "Experiment completed successfully!"
+print_info "Results saved to: $OUTPUT_FILE"
+print_info ""
+
