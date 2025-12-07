@@ -1,0 +1,15 @@
+[submodule "halo2"]
+	path = halo2
+	url = https://github.com/hkust-okx-zkdex-project/halo2.git
+[submodule "VTLP"]
+	path = VTLP
+	url = https://github.com/hkust-okx-zkdex-project/VTLP.git
+[submodule "halo2-link-circuit"]
+	path = halo2-link-circuit
+	url = https://github.com/hkust-okx-zkdex-project/halo2-link-circuit.git
+[submodule "ark-iesp"]
+	path = ark-iesp
+	url = https://github.com/hkust-okx-zkdex-project/ark-iesp.git
+[submodule "rsa_accumulator"]
+	path = rsa_accumulator
+	url = https://github.com/hkust-okx-zkdex-project/rsa_accumulator.git
