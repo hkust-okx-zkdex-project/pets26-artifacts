@@ -129,9 +129,13 @@ if [ "$RUST_INSTALL_NEEDED" = true ]; then
     if ! command -v rustup &> /dev/null; then
         print_info "Installing rustup..."
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-        source "$HOME/.cargo/env"
     else
         print_info "rustup is already installed: $(rustup --version)"
+    fi
+    
+    # Always source cargo env to ensure rustc and cargo are in PATH
+    if [ -f "$HOME/.cargo/env" ]; then
+        source "$HOME/.cargo/env"
     fi
     
     # Check if the specific version is already installed
@@ -143,13 +147,22 @@ if [ "$RUST_INSTALL_NEEDED" = true ]; then
         rustup install "$RUST_REQUIRED_VERSION"
         rustup default "$RUST_REQUIRED_VERSION"
     fi
+else
+    # Even if Rust is already installed, make sure cargo env is sourced
+    if [ -f "$HOME/.cargo/env" ]; then
+        source "$HOME/.cargo/env"
+    fi
 fi
 
 # Verify Rust installation
-RUST_VERSION=$(rustc --version)
-print_info "Rust version: $RUST_VERSION"
-CARGO_VERSION=$(cargo --version)
-print_info "Cargo version: $CARGO_VERSION"
+if command -v rustc &> /dev/null; then
+    RUST_VERSION=$(rustc --version)
+    print_info "Rust version: $RUST_VERSION"
+    CARGO_VERSION=$(cargo --version)
+    print_info "Cargo version: $CARGO_VERSION"
+else
+    print_warn "rustc not found in PATH. You may need to run: source ~/.cargo/env"
+fi
 
 # Function to check if Go is installed at a specific path with a specific version
 check_go_version_at_path() {
@@ -248,6 +261,7 @@ else
         if ! grep -q '/usr/local/go/bin' "$HOME/.bashrc" 2>/dev/null; then
             echo 'export PATH=$PATH:/usr/local/go/bin' >> "$HOME/.bashrc"
         fi
+        # Add to current session PATH
         export PATH=$PATH:/usr/local/go/bin
     else
         GO_INSTALL_NEEDED=true
@@ -260,8 +274,13 @@ if [ "$GO_INSTALL_NEEDED" = true ]; then
 fi
 
 # Verify Go installation
-GO_VERSION=$(go version)
-print_info "Go version: $GO_VERSION"
+if command -v go &> /dev/null; then
+    GO_VERSION=$(go version)
+    print_info "Go version: $GO_VERSION"
+else
+    print_warn "go not found in PATH. You may need to run: export PATH=\$PATH:/usr/local/go/bin"
+    print_warn "Or restart your terminal to load changes from ~/.bashrc"
+fi
 
 # Ensure we're in the original directory
 cd "$ORIGINAL_DIR" || exit 1
@@ -380,11 +399,26 @@ print_info "=========================================="
 print_info "Setup completed successfully!"
 print_info "=========================================="
 print_info ""
-print_info "Installed versions:"
-print_info "  Rust: $(rustc --version)"
-print_info "  Cargo: $(cargo --version)"
-print_info "  Go: $(go version)"
+
+# Check what's available in PATH
+NEEDS_SOURCE=false
+print_info "Installed versions (in this script's environment):"
+if command -v rustc &> /dev/null; then
+    print_info "  Rust: $(rustc --version)"
+    print_info "  Cargo: $(cargo --version)"
+else
+    print_warn "  Rust: Not in PATH (but may be installed)"
+    NEEDS_SOURCE=true
+fi
+
+if command -v go &> /dev/null; then
+    print_info "  Go: $(go version)"
+else
+    print_warn "  Go: Not in PATH (but may be installed)"
+    NEEDS_SOURCE=true
+fi
 print_info ""
+
 if [ "$IS_GIT_REPO" = true ]; then
     print_info "Git submodules status:"
     if git submodule status > /dev/null 2>&1; then
@@ -396,12 +430,25 @@ else
     print_info "Git submodules: Skipped (not a git repository)"
 fi
 print_info ""
-print_info "Note: If you opened a new terminal, you may need to run:"
-print_info "  source ~/.cargo/env  # For Rust"
-print_info "  export PATH=\$PATH:/usr/local/go/bin  # For Go (or restart terminal)"
-print_info ""
+
+if [ "$NEEDS_SOURCE" = true ]; then
+    print_warn "=========================================="
+    print_warn "IMPORTANT: To use Rust and/or Go in your current shell, run:"
+    print_warn "=========================================="
+    if ! command -v rustc &> /dev/null && [ -f "$HOME/.cargo/env" ]; then
+        print_warn "  source ~/.cargo/env  # For Rust"
+    fi
+    if ! command -v go &> /dev/null && [ -d "/usr/local/go" ]; then
+        print_warn "  export PATH=\$PATH:/usr/local/go/bin  # For Go"
+    fi
+    print_warn ""
+    print_warn "Or simply restart your terminal to load changes from ~/.bashrc"
+    print_warn "=========================================="
+    print_info ""
+fi
+
 print_info "You can now build the projects:"
-print_info "  Rust projects: cd <project> && cargo build"
+print_info "  Rust projects: cd <project> && cargo build --release"
 print_info "  Go projects: cd <project> && go build"
 print_info ""
 
