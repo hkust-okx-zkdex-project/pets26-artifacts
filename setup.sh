@@ -39,6 +39,49 @@ print_info "Working directory: $ORIGINAL_DIR"
 # Track if we made changes that require sourcing
 MADE_BASHRC_CHANGES=false
 MADE_CARGO_CHANGES=false
+MADE_PROFILE_CHANGES=false
+
+# Function to add cargo env sourcing to shell config files
+add_cargo_env_to_shell_config() {
+    local config_file="$1"
+    local cargo_env_line='. "$HOME/.cargo/env"'
+    
+    if [ -f "$config_file" ]; then
+        if ! grep -qF '. "$HOME/.cargo/env"' "$config_file" && ! grep -qF 'source "$HOME/.cargo/env"' "$config_file"; then
+            echo "" >> "$config_file"
+            echo "# Rust/Cargo environment" >> "$config_file"
+            echo "$cargo_env_line" >> "$config_file"
+            return 0
+        fi
+    else
+        # Create the file if it doesn't exist
+        echo "# Rust/Cargo environment" >> "$config_file"
+        echo "$cargo_env_line" >> "$config_file"
+        return 0
+    fi
+    return 1
+}
+
+# Function to add Go to PATH in shell config files
+add_go_to_path_in_shell_config() {
+    local config_file="$1"
+    local go_path_line='export PATH=$PATH:/usr/local/go/bin'
+    
+    if [ -f "$config_file" ]; then
+        if ! grep -qF '/usr/local/go/bin' "$config_file"; then
+            echo "" >> "$config_file"
+            echo "# Go binary path" >> "$config_file"
+            echo "$go_path_line" >> "$config_file"
+            return 0
+        fi
+    else
+        # Create the file if it doesn't exist
+        echo "# Go binary path" >> "$config_file"
+        echo "$go_path_line" >> "$config_file"
+        return 0
+    fi
+    return 1
+}
 
 # Check if we're in the repository root (look for .gitmodules)
 if [ ! -f ".gitmodules" ]; then
@@ -142,6 +185,15 @@ if [ "$RUST_INSTALL_NEEDED" = true ]; then
     if [ -f "$HOME/.cargo/env" ]; then
         source "$HOME/.cargo/env"
         MADE_CARGO_CHANGES=true
+        
+        # Persist cargo env sourcing to shell config files
+        if add_cargo_env_to_shell_config "$HOME/.bashrc"; then
+            print_info "Added Rust/Cargo environment to ~/.bashrc"
+        fi
+        if [ -f "$HOME/.profile" ] && add_cargo_env_to_shell_config "$HOME/.profile"; then
+            print_info "Added Rust/Cargo environment to ~/.profile"
+            MADE_PROFILE_CHANGES=true
+        fi
     fi
     
     # Check if the specific version is already installed
@@ -156,9 +208,20 @@ if [ "$RUST_INSTALL_NEEDED" = true ]; then
 else
     # Even if Rust is already installed, make sure cargo env is sourced if it exists
     # This handles the case where rustc is in PATH but cargo env hasn't been sourced
-    if [ -f "$HOME/.cargo/env" ] && ! command -v rustc &> /dev/null; then
-        source "$HOME/.cargo/env"
-        MADE_CARGO_CHANGES=true
+    if [ -f "$HOME/.cargo/env" ]; then
+        if ! command -v rustc &> /dev/null; then
+            source "$HOME/.cargo/env"
+        fi
+        
+        # Always ensure cargo env is in shell config files for persistence
+        if add_cargo_env_to_shell_config "$HOME/.bashrc"; then
+            print_info "Added Rust/Cargo environment to ~/.bashrc"
+            MADE_CARGO_CHANGES=true
+        fi
+        if [ -f "$HOME/.profile" ] && add_cargo_env_to_shell_config "$HOME/.profile"; then
+            print_info "Added Rust/Cargo environment to ~/.profile"
+            MADE_PROFILE_CHANGES=true
+        fi
     fi
 fi
 
@@ -230,11 +293,14 @@ install_go_1_19() {
     # Return to original directory
     cd "$ORIGINAL_DIR" || exit 1
     
-    # Add Go to PATH if not already there
-    if ! grep -q '/usr/local/go/bin' "$HOME/.bashrc" 2>/dev/null; then
-        echo 'export PATH=$PATH:/usr/local/go/bin' >> "$HOME/.bashrc"
+    # Add Go to PATH in shell config files if not already there
+    if add_go_to_path_in_shell_config "$HOME/.bashrc"; then
+        print_info "Added Go to PATH in ~/.bashrc"
         MADE_BASHRC_CHANGES=true
-        export PATH=$PATH:/usr/local/go/bin
+    fi
+    if [ -f "$HOME/.profile" ] && add_go_to_path_in_shell_config "$HOME/.profile"; then
+        print_info "Added Go to PATH in ~/.profile"
+        MADE_PROFILE_CHANGES=true
     fi
     
     # Also add to current session
@@ -267,9 +333,13 @@ else
         INSTALLED_VERSION=$(check_go_version_at_path "/usr/local/go" "$GO_REQUIRED_VERSION")
         print_info "Go $INSTALLED_VERSION is installed at /usr/local/go but not in PATH"
         print_info "Adding /usr/local/go/bin to PATH..."
-        if ! grep -q '/usr/local/go/bin' "$HOME/.bashrc" 2>/dev/null; then
-            echo 'export PATH=$PATH:/usr/local/go/bin' >> "$HOME/.bashrc"
+        if add_go_to_path_in_shell_config "$HOME/.bashrc"; then
+            print_info "Added Go to PATH in ~/.bashrc"
             MADE_BASHRC_CHANGES=true
+        fi
+        if [ -f "$HOME/.profile" ] && add_go_to_path_in_shell_config "$HOME/.profile"; then
+            print_info "Added Go to PATH in ~/.profile"
+            MADE_PROFILE_CHANGES=true
         fi
         # Add to current session PATH
         export PATH=$PATH:/usr/local/go/bin
@@ -439,7 +509,7 @@ fi
 print_info ""
 
 # Always show instructions if we made changes that require sourcing
-if [ "$MADE_CARGO_CHANGES" = true ] || [ "$MADE_BASHRC_CHANGES" = true ]; then
+if [ "$MADE_CARGO_CHANGES" = true ] || [ "$MADE_BASHRC_CHANGES" = true ] || [ "$MADE_PROFILE_CHANGES" = true ]; then
     print_warn "=========================================="
     print_warn "IMPORTANT: Environment changes were made!"
     print_warn "=========================================="
@@ -448,11 +518,26 @@ if [ "$MADE_CARGO_CHANGES" = true ] || [ "$MADE_BASHRC_CHANGES" = true ]; then
     if [ "$MADE_CARGO_CHANGES" = true ]; then
         print_warn "  source ~/.cargo/env  # For Rust"
     fi
-    if [ "$MADE_BASHRC_CHANGES" = true ]; then
+    if [ "$MADE_BASHRC_CHANGES" = true ] || [ "$MADE_PROFILE_CHANGES" = true ]; then
         print_warn "  export PATH=\$PATH:/usr/local/go/bin  # For Go"
     fi
     print_warn ""
-    print_warn "Or simply restart your terminal to load changes from ~/.bashrc"
+    CONFIG_FILES=""
+    if [ "$MADE_BASHRC_CHANGES" = true ]; then
+        CONFIG_FILES="~/.bashrc"
+    fi
+    if [ "$MADE_PROFILE_CHANGES" = true ]; then
+        if [ -n "$CONFIG_FILES" ]; then
+            CONFIG_FILES="$CONFIG_FILES and ~/.profile"
+        else
+            CONFIG_FILES="~/.profile"
+        fi
+    fi
+    if [ -n "$CONFIG_FILES" ]; then
+        print_warn "Or simply restart your terminal to load changes from $CONFIG_FILES"
+    else
+        print_warn "Or simply restart your terminal to load changes"
+    fi
     print_warn "=========================================="
     print_info ""
 fi
