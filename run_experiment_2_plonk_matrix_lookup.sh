@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Script to run Experiment 2: Plonk + matrix lookup (2 fan-in gates, powered by matrix lookup)
-# This experiment runs the sublonk benchmark for Figure 4(a), Figure 4(b), Figure 4(c), Figure 4(d)
+# Script to run Experiment 2: Plonk + matrix lookup according to total transaction types in the lookup table
+# (2 fan-in gates, powered by matrix lookup)
+# This experiment runs the sublonk benchmark for Figure 4(a), Figure 4(c), and partial Figure 4(d)
 
 set -e  # Exit on error
 
@@ -55,7 +56,8 @@ fi
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 OUTPUT_FILE="$RESULTS_DIR/experiment_2_plonk_matrix_lookup_${TIMESTAMP}.txt"
 
-print_info "Starting Experiment 2: Plonk + matrix lookup according to total transaction types"
+print_info "Starting Experiment 2: Plonk + matrix lookup according to total transaction types in the lookup table"
+print_info "(2 fan-in gates, powered by matrix lookup)"
 print_info "This experiment is for Figure 4(a), Figure 4(c), and partial Figure 4(d)"
 print_info "Output will be saved to: $OUTPUT_FILE"
 print_info ""
@@ -68,20 +70,21 @@ print_info "Updating Cargo dependencies..."
 cargo update
 
 # Run the experiment and capture output
-print_info "Running: BENCHMARK_TYPE=1 cargo run --release --bin sublonk"
+print_info "Running: cargo run --release --bin sublonk"
 print_info "This may take a while..."
 
 # Run the command and capture both stdout and stderr
 {
     echo "=========================================="
-    echo "Experiment 2: Plonk + matrix lookup according to total transaction types"
+    echo "Experiment 2: Plonk + matrix lookup according to total transaction types in the lookup table"
+    echo "(2 fan-in gates, powered by matrix lookup)"
     echo "For Figure 4(a), Figure 4(c), and partial Figure 4(d)"
     echo "Timestamp: $(date)"
-    echo "Command: BENCHMARK_TYPE=1 cargo run --release --bin sublonk"
+    echo "Command: cargo run --release --bin sublonk"
     echo "=========================================="
     echo ""
     
-    BENCHMARK_TYPE=1 cargo run --release --bin sublonk 2>&1
+    cargo run --release --bin sublonk 2>&1
     
     echo ""
     echo "=========================================="

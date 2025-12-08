@@ -18,7 +18,8 @@ The experiments are organized into automated scripts that compile the necessary 
 ```
 .
 ├── ark-iesp/                    # Link protocol implementation (Experiment 1)
-├── halo2/                       # PlonK implementation with matrix lookup (Experiments 2, 3, 4)
+├── ark-segmentlookup/           # Matrix lookup by distinct segments (Experiment 3)
+├── halo2/                       # PlonK implementation with matrix lookup (Experiments 2, 4)
 ├── halo2-link-circuit/          # Link circuit implementation (Experiment 5)
 ├── rsa_accumulator/             # RSA Accumulator (future experiments)
 ├── VTLP/                        # EdDSA benchmark with VTLP (future experiments)
@@ -110,7 +111,7 @@ This experiment benchmarks the Link protocol implementation.
 
 ### Experiment 2: PlonK + Matrix Lookup by Transaction Types (Figure 4a, 4c, partial 4d)
 
-This experiment benchmarks PlonK with matrix lookup varying by the total number of transaction types in the lookup table.
+This experiment benchmarks PlonK with matrix lookup according to total transaction types in the lookup table (2 fan-in gates, powered by matrix lookup).
 
 ```bash
 ./run_experiment_2_plonk_matrix_lookup.sh
@@ -120,9 +121,11 @@ This experiment benchmarks PlonK with matrix lookup varying by the total number 
 
 **Corresponds to:** Figure 4(a), Figure 4(c), and partial Figure 4(d) in the paper
 
-### Experiment 3: PlonK + Matrix Lookup by Distinct Segments (Figure 4b)
+**Implementation:** Located in `halo2/sublonk` submodule, runs `cargo run --release --bin sublonk`
 
-This experiment benchmarks PlonK with matrix lookup varying by the number of distinct segments selected.
+### Experiment 3: Matrix Lookup by Distinct Segments (Figure 4b)
+
+This experiment benchmarks matrix lookup according to the number of distinct segments selected.
 
 ```bash
 ./run_experiment_3_plonk_segments.sh
@@ -131,6 +134,8 @@ This experiment benchmarks PlonK with matrix lookup varying by the number of dis
 **Output:** `results/experiment_3_plonk_segments_<timestamp>.txt`
 
 **Corresponds to:** Figure 4(b) in the paper
+
+**Implementation:** Located in `ark-segmentlookup/bench/end_to_end` submodule, runs `cargo run --release`
 
 ### Experiment 4: Pure PlonK Monolithic Circuit (partial Figure 4d)
 
@@ -182,7 +187,10 @@ Some results require mathematical inference to match the exact figures in the pa
 Implementation of the Link protocol used in Experiment 1. Built in Rust using arkworks libraries.
 
 ### halo2
-Modified version of the halo2 proving system with matrix lookup support. Used in Experiments 2, 3, and 4.
+Modified version of the halo2 proving system with matrix lookup support. Used in Experiments 2 and 4.
+
+### ark-segmentlookup
+Implementation of matrix lookup according to the number of distinct segments selected. Used in Experiment 3.
 
 ### halo2-link-circuit
 Implementation of the link circuit that combines PlonK and Groth16 proofs. Used in Experiment 5.

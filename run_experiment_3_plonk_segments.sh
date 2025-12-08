@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script to run Experiment 3: Plonk + matrix lookup according to the number of distinct segments selected
-# This experiment runs the sublonk benchmark for Figure 4(b)
+# Script to run Experiment 3: Matrix lookup according to the number of distinct segments selected
+# This experiment runs the ark-segmentlookup benchmark for Figure 4(b)
 
 set -e  # Exit on error
 
@@ -40,8 +40,13 @@ if [ ! -d "halo2" ]; then
 fi
 
 # Check if the experiment directory exists
-if [ ! -d "halo2/sublonk" ]; then
-    print_error "Experiment directory halo2/sublonk not found"
+if [ ! -d "ark-segmentlookup" ]; then
+    print_error "Experiment directory ark-segmentlookup not found"
+    exit 1
+fi
+
+if [ ! -d "ark-segmentlookup/bench/end_to_end" ]; then
+    print_error "Experiment directory ark-segmentlookup/bench/end_to_end not found"
     exit 1
 fi
 
@@ -55,33 +60,34 @@ fi
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 OUTPUT_FILE="$RESULTS_DIR/experiment_3_plonk_segments_${TIMESTAMP}.txt"
 
-print_info "Starting Experiment 3: Plonk + matrix lookup according to distinct segments selected"
+print_info "Starting Experiment 3: Matrix lookup according to the number of distinct segments selected"
 print_info "This experiment is for Figure 4(b)"
 print_info "Output will be saved to: $OUTPUT_FILE"
 print_info ""
 
 # Change to the experiment directory
-cd "$REPO_ROOT/halo2/sublonk"
+cd "$REPO_ROOT/ark-segmentlookup/bench/end_to_end"
 
 # Update dependencies before building
 print_info "Updating Cargo dependencies..."
 cargo update
 
 # Run the experiment and capture output
-print_info "Running: BENCHMARK_TYPE=2 cargo run --release --bin sublonk"
+print_info "Running: cargo run --release"
 print_info "This may take a while..."
 
 # Run the command and capture both stdout and stderr
 {
     echo "=========================================="
-    echo "Experiment 3: Plonk + matrix lookup according to distinct segments selected"
+    echo "Experiment 3: Matrix lookup according to the number of distinct segments selected"
     echo "For Figure 4(b)"
     echo "Timestamp: $(date)"
-    echo "Command: BENCHMARK_TYPE=2 cargo run --release --bin sublonk"
+    echo "Command: cargo run --release"
+    echo "Working directory: ark-segmentlookup/bench/end_to_end"
     echo "=========================================="
     echo ""
     
-    BENCHMARK_TYPE=2 cargo run --release --bin sublonk 2>&1
+    cargo run --release 2>&1
     
     echo ""
     echo "=========================================="
