@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setup script for PETS26 Artifacts
-# This script sets up git submodules and installs required dependencies (Rust 1.80.0 and Go 1.19)
+# This script sets up git submodules and installs required dependencies (Rust 1.82.0 and Go 1.19)
 # Designed for Ubuntu systems
 
 set -e  # Exit on error
@@ -54,35 +54,35 @@ sudo apt-get install -y \
     gnupg \
     lsb-release
 
-# Check and install Rust 1.80.0
+# Check and install Rust 1.82.0
 print_info "Checking Rust installation..."
 if command -v rustc &> /dev/null; then
     RUST_VERSION=$(rustc --version | awk '{print $2}')
     print_info "Rust is already installed: $RUST_VERSION"
     
-    # Check if version is 1.80.0 or compatible
+    # Check if version is 1.82.0 or compatible
     # Extract major.minor version
     RUST_MAJOR=$(echo "$RUST_VERSION" | cut -d. -f1)
     RUST_MINOR=$(echo "$RUST_VERSION" | cut -d. -f2)
     
-    if [ "$RUST_MAJOR" -gt 1 ] || ([ "$RUST_MAJOR" -eq 1 ] && [ "$RUST_MINOR" -ge 80 ]); then
-        print_info "Rust version is compatible (>= 1.80.0)"
+    if [ "$RUST_MAJOR" -gt 1 ] || ([ "$RUST_MAJOR" -eq 1 ] && [ "$RUST_MINOR" -ge 82 ]); then
+        print_info "Rust version is compatible (>= 1.82.0)"
     else
-        print_warn "Rust version $RUST_VERSION is older than required 1.80.0"
-        print_info "Installing Rust 1.80.0 via rustup..."
+        print_warn "Rust version $RUST_VERSION is older than required 1.82.0"
+        print_info "Installing Rust 1.82.0 via rustup..."
         if ! command -v rustup &> /dev/null; then
             curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
             source "$HOME/.cargo/env"
         fi
-        rustup install 1.80.0
-        rustup default 1.80.0
+        rustup install 1.82.0
+        rustup default 1.82.0
     fi
 else
-    print_info "Rust is not installed. Installing Rust 1.80.0 via rustup..."
+    print_info "Rust is not installed. Installing Rust 1.82.0 via rustup..."
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
     source "$HOME/.cargo/env"
-    rustup install 1.80.0
-    rustup default 1.80.0
+    rustup install 1.82.0
+    rustup default 1.82.0
 fi
 
 # Verify Rust installation

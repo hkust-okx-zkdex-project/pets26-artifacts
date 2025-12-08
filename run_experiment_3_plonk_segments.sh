@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script to run Experiment 2: Plonk + matrix lookup (2 fan-in gates, powered by matrix lookup)
-# This experiment runs the sublonk benchmark for Figure 4(a), Figure 4(b), Figure 4(c), Figure 4(d)
+# Script to run Experiment 3: Plonk + matrix lookup according to the number of distinct segments selected
+# This experiment runs the sublonk benchmark for Figure 4(b)
 
 set -e  # Exit on error
 
@@ -53,10 +53,10 @@ fi
 
 # Generate output filename with timestamp
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-OUTPUT_FILE="$RESULTS_DIR/experiment_2_plonk_matrix_lookup_${TIMESTAMP}.txt"
+OUTPUT_FILE="$RESULTS_DIR/experiment_3_plonk_segments_${TIMESTAMP}.txt"
 
-print_info "Starting Experiment 2: Plonk + matrix lookup according to total transaction types"
-print_info "This experiment is for Figure 4(a), Figure 4(c), and partial Figure 4(d)"
+print_info "Starting Experiment 3: Plonk + matrix lookup according to distinct segments selected"
+print_info "This experiment is for Figure 4(b)"
 print_info "Output will be saved to: $OUTPUT_FILE"
 print_info ""
 
@@ -64,20 +64,20 @@ print_info ""
 cd "$REPO_ROOT/halo2/sublonk"
 
 # Run the experiment and capture output
-print_info "Running: BENCHMARK_TYPE=1 cargo run --release --bin sublonk"
+print_info "Running: BENCHMARK_TYPE=2 cargo run --release --bin sublonk"
 print_info "This may take a while..."
 
 # Run the command and capture both stdout and stderr
 {
     echo "=========================================="
-    echo "Experiment 2: Plonk + matrix lookup according to total transaction types"
-    echo "For Figure 4(a), Figure 4(c), and partial Figure 4(d)"
+    echo "Experiment 3: Plonk + matrix lookup according to distinct segments selected"
+    echo "For Figure 4(b)"
     echo "Timestamp: $(date)"
-    echo "Command: BENCHMARK_TYPE=1 cargo run --release --bin sublonk"
+    echo "Command: BENCHMARK_TYPE=2 cargo run --release --bin sublonk"
     echo "=========================================="
     echo ""
     
-    BENCHMARK_TYPE=1 cargo run --release --bin sublonk 2>&1
+    BENCHMARK_TYPE=2 cargo run --release --bin sublonk 2>&1
     
     echo ""
     echo "=========================================="

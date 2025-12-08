@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script to run Experiment 3: The link circuit (combine Plonk with groth16)
+# Script to run Experiment 5: The link circuit (combine Plonk with groth16)
 # This experiment runs the end-to-end benchmark with multiple parameter combinations
 
 set -e  # Exit on error
@@ -59,10 +59,10 @@ fi
 
 # Generate output filename with timestamp
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-OUTPUT_FILE="$RESULTS_DIR/experiment_3_link_circuit_${TIMESTAMP}.txt"
-LOG_PREFIX="experiment_3_link_circuit_${TIMESTAMP}"
+OUTPUT_FILE="$RESULTS_DIR/experiment_5_link_circuit_${TIMESTAMP}.txt"
+LOG_PREFIX="experiment_5_link_circuit_${TIMESTAMP}"
 
-print_info "Starting Experiment 3: The link circuit (combine Plonk with groth16)"
+print_info "Starting Experiment 5: The link circuit (combine Plonk with groth16)"
 print_info "This experiment tests multiple parameter combinations with multiple iterations"
 print_info "Output will be saved to: $OUTPUT_FILE"
 print_info ""
@@ -81,7 +81,7 @@ print_info "This may take a while..."
 # Run the batch_run.sh script and capture output
 {
     echo "=========================================="
-    echo "Experiment 3: The link circuit (combine Plonk with groth16)"
+    echo "Experiment 5: The link circuit (combine Plonk with groth16)"
     echo "Timestamp: $(date)"
     echo "Command: ./batch_run.sh $LOG_PREFIX"
     echo "=========================================="
