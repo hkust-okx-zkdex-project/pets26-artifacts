@@ -367,15 +367,26 @@ cd "$ORIGINAL_DIR" || exit 1
 
 # Setup git submodules (only if this is a git repository)
 if [ "$IS_GIT_REPO" = true ]; then
-    # Check if submodules are already initialized
+    # Check if submodules are already initialized and populated
     SUBMODULES_NEED_INIT=false
     if [ -f ".gitmodules" ]; then
-        # Check if any submodules are not initialized
+        # Check if any submodules are not initialized or are empty
         while IFS= read -r line; do
             SUBMODULE_PATH=$(echo "$line" | awk '{print $2}')
-            if [ -n "$SUBMODULE_PATH" ] && [ ! -d "$SUBMODULE_PATH/.git" ]; then
-                SUBMODULES_NEED_INIT=true
-                break
+            if [ -n "$SUBMODULE_PATH" ]; then
+                # Check if directory exists and has content
+                if [ ! -d "$SUBMODULE_PATH" ] || [ ! -d "$SUBMODULE_PATH/.git" ]; then
+                    SUBMODULES_NEED_INIT=true
+                    break
+                else
+                    # Check if directory is empty (has no files except .git)
+                    FILE_COUNT=$(find "$SUBMODULE_PATH" -mindepth 1 -maxdepth 1 ! -name '.git' 2>/dev/null | wc -l)
+                    if [ "$FILE_COUNT" -eq 0 ]; then
+                        print_info "Submodule $SUBMODULE_PATH exists but is empty, will reinitialize..."
+                        SUBMODULES_NEED_INIT=true
+                        break
+                    fi
+                fi
             fi
         done < <(git config --file .gitmodules --get-regexp path | awk '{print $2}')
         
@@ -386,20 +397,62 @@ if [ "$IS_GIT_REPO" = true ]; then
     
     if [ "$SUBMODULES_NEED_INIT" = true ] || ! git submodule status > /dev/null 2>&1; then
         print_info "Initializing and updating git submodules..."
+        # Remove empty submodule directories before initialization
+        if [ -f ".gitmodules" ]; then
+            while IFS= read -r line; do
+                SUBMODULE_PATH=$(echo "$line" | awk '{print $2}')
+                if [ -n "$SUBMODULE_PATH" ] && [ -d "$SUBMODULE_PATH" ] && [ ! -d "$SUBMODULE_PATH/.git" ]; then
+                    print_info "Removing empty submodule directory: $SUBMODULE_PATH"
+                    rm -rf "$SUBMODULE_PATH"
+                fi
+            done < <(git config --file .gitmodules --get-regexp path | awk '{print $2}')
+        fi
+        # Sync submodule URLs first
+        git submodule sync --recursive 2>/dev/null || true
+        # Force initialization and update
         if git submodule update --init --recursive; then
             print_info "Git submodules initialized successfully"
         else
-            print_warn "Failed to initialize git submodules. Continuing anyway..."
+            print_warn "Failed to initialize git submodules. Trying alternative method..."
+            # Alternative: initialize each submodule individually
+            if [ -f ".gitmodules" ]; then
+                while IFS= read -r line; do
+                    SUBMODULE_PATH=$(echo "$line" | awk '{print $2}')
+                    if [ -n "$SUBMODULE_PATH" ]; then
+                        print_info "Initializing submodule: $SUBMODULE_PATH"
+                        # Remove empty directory if it exists
+                        if [ -d "$SUBMODULE_PATH" ] && [ ! -d "$SUBMODULE_PATH/.git" ]; then
+                            print_info "Removing empty submodule directory: $SUBMODULE_PATH"
+                            rm -rf "$SUBMODULE_PATH"
+                        fi
+                        git submodule update --init --recursive "$SUBMODULE_PATH" || true
+                    fi
+                done < <(git config --file .gitmodules --get-regexp path | awk '{print $2}')
+            fi
         fi
     else
         print_info "Updating git submodules to latest commits..."
+        git submodule sync --recursive 2>/dev/null || true
         git submodule update --recursive --remote 2>/dev/null || true
     fi
     
-    # Verify submodules are initialized
+    # Verify submodules are initialized and populated
     print_info "Verifying submodules..."
     if git submodule status > /dev/null 2>&1; then
         git submodule status
+        # Double-check that submodules have content
+        if [ -f ".gitmodules" ]; then
+            while IFS= read -r line; do
+                SUBMODULE_PATH=$(echo "$line" | awk '{print $2}')
+                if [ -n "$SUBMODULE_PATH" ] && [ -d "$SUBMODULE_PATH" ]; then
+                    FILE_COUNT=$(find "$SUBMODULE_PATH" -mindepth 1 -maxdepth 1 ! -name '.git' 2>/dev/null | wc -l)
+                    if [ "$FILE_COUNT" -eq 0 ]; then
+                        print_warn "Warning: Submodule $SUBMODULE_PATH is still empty after initialization"
+                        print_warn "You may need to manually run: git submodule update --init --recursive --force"
+                    fi
+                fi
+            done < <(git config --file .gitmodules --get-regexp path | awk '{print $2}')
+        fi
     else
         print_warn "Could not verify submodule status"
     fi
