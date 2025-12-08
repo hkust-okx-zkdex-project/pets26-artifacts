@@ -59,7 +59,16 @@ The setup script is designed for **Ubuntu/Debian** systems but may work on other
    - Initialize and update all git submodules
    - Download and cache Rust/Go dependencies for all projects
 
-3. **Verify installation:**
+3. **Reload your shell environment:**
+   
+   After the setup script completes, reload your shell environment to make Rust and Go available:
+   ```bash
+   source ~/.bashrc
+   ```
+   
+   Alternatively, you can restart your terminal session.
+
+4. **Verify installation:**
    
    After setup completes, verify the installations:
    ```bash
@@ -68,10 +77,10 @@ The setup script is designed for **Ubuntu/Debian** systems but may work on other
    go version        # Should show 1.19 or higher
    ```
 
-   If you opened a new terminal after setup, you may need to source the environment:
+   If the commands are still not found after running `source ~/.bashrc`, you may need to manually source the environment:
    ```bash
    source ~/.cargo/env  # For Rust
-   export PATH=$PATH:/usr/local/go/bin  # For Go (or restart terminal)
+   export PATH=$PATH:/usr/local/go/bin  # For Go
    ```
 
 ## Running Experiments
