@@ -36,6 +36,10 @@ print_info "Starting setup for PETS26 Artifacts..."
 ORIGINAL_DIR=$(pwd)
 print_info "Working directory: $ORIGINAL_DIR"
 
+# Track if we made changes that require sourcing
+MADE_BASHRC_CHANGES=false
+MADE_CARGO_CHANGES=false
+
 # Check if we're in the repository root (look for .gitmodules)
 if [ ! -f ".gitmodules" ]; then
     print_warn "No .gitmodules file found. This might not be a git repository."
@@ -129,6 +133,7 @@ if [ "$RUST_INSTALL_NEEDED" = true ]; then
     if ! command -v rustup &> /dev/null; then
         print_info "Installing rustup..."
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+        MADE_CARGO_CHANGES=true
     else
         print_info "rustup is already installed: $(rustup --version)"
     fi
@@ -136,6 +141,7 @@ if [ "$RUST_INSTALL_NEEDED" = true ]; then
     # Always source cargo env to ensure rustc and cargo are in PATH
     if [ -f "$HOME/.cargo/env" ]; then
         source "$HOME/.cargo/env"
+        MADE_CARGO_CHANGES=true
     fi
     
     # Check if the specific version is already installed
@@ -148,9 +154,11 @@ if [ "$RUST_INSTALL_NEEDED" = true ]; then
         rustup default "$RUST_REQUIRED_VERSION"
     fi
 else
-    # Even if Rust is already installed, make sure cargo env is sourced
-    if [ -f "$HOME/.cargo/env" ]; then
+    # Even if Rust is already installed, make sure cargo env is sourced if it exists
+    # This handles the case where rustc is in PATH but cargo env hasn't been sourced
+    if [ -f "$HOME/.cargo/env" ] && ! command -v rustc &> /dev/null; then
         source "$HOME/.cargo/env"
+        MADE_CARGO_CHANGES=true
     fi
 fi
 
@@ -225,6 +233,7 @@ install_go_1_19() {
     # Add Go to PATH if not already there
     if ! grep -q '/usr/local/go/bin' "$HOME/.bashrc" 2>/dev/null; then
         echo 'export PATH=$PATH:/usr/local/go/bin' >> "$HOME/.bashrc"
+        MADE_BASHRC_CHANGES=true
         export PATH=$PATH:/usr/local/go/bin
     fi
     
@@ -260,6 +269,7 @@ else
         print_info "Adding /usr/local/go/bin to PATH..."
         if ! grep -q '/usr/local/go/bin' "$HOME/.bashrc" 2>/dev/null; then
             echo 'export PATH=$PATH:/usr/local/go/bin' >> "$HOME/.bashrc"
+            MADE_BASHRC_CHANGES=true
         fi
         # Add to current session PATH
         export PATH=$PATH:/usr/local/go/bin
@@ -401,21 +411,18 @@ print_info "=========================================="
 print_info ""
 
 # Check what's available in PATH
-NEEDS_SOURCE=false
 print_info "Installed versions (in this script's environment):"
 if command -v rustc &> /dev/null; then
     print_info "  Rust: $(rustc --version)"
     print_info "  Cargo: $(cargo --version)"
 else
     print_warn "  Rust: Not in PATH (but may be installed)"
-    NEEDS_SOURCE=true
 fi
 
 if command -v go &> /dev/null; then
     print_info "  Go: $(go version)"
 else
     print_warn "  Go: Not in PATH (but may be installed)"
-    NEEDS_SOURCE=true
 fi
 print_info ""
 
@@ -431,14 +438,17 @@ else
 fi
 print_info ""
 
-if [ "$NEEDS_SOURCE" = true ]; then
+# Always show instructions if we made changes that require sourcing
+if [ "$MADE_CARGO_CHANGES" = true ] || [ "$MADE_BASHRC_CHANGES" = true ]; then
     print_warn "=========================================="
-    print_warn "IMPORTANT: To use Rust and/or Go in your current shell, run:"
+    print_warn "IMPORTANT: Environment changes were made!"
     print_warn "=========================================="
-    if ! command -v rustc &> /dev/null && [ -f "$HOME/.cargo/env" ]; then
+    print_warn "To use Rust and/or Go in your CURRENT shell, run:"
+    print_warn ""
+    if [ "$MADE_CARGO_CHANGES" = true ]; then
         print_warn "  source ~/.cargo/env  # For Rust"
     fi
-    if ! command -v go &> /dev/null && [ -d "/usr/local/go" ]; then
+    if [ "$MADE_BASHRC_CHANGES" = true ]; then
         print_warn "  export PATH=\$PATH:/usr/local/go/bin  # For Go"
     fi
     print_warn ""
@@ -448,8 +458,10 @@ if [ "$NEEDS_SOURCE" = true ]; then
 fi
 
 print_info "You can now build the projects:"
-print_info "  Rust projects: cd <project> && cargo build --release"
+print_info "  Rust projects: cd <project> && cargo update && cargo build --release"
 print_info "  Go projects: cd <project> && go build"
+print_info ""
+print_info "Note: For Rust benchmarks, run 'cargo update' first before building."
 print_info ""
 
 

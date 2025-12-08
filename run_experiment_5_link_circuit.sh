@@ -70,6 +70,10 @@ print_info ""
 # Change to the experiment directory
 cd "$REPO_ROOT/halo2-link-circuit/bench/end-to-end"
 
+# Update dependencies before building
+print_info "Updating Cargo dependencies..."
+cargo update
+
 # Make batch_run.sh executable if it isn't already
 chmod +x batch_run.sh
 

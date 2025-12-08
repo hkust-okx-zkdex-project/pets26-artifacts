@@ -62,6 +62,10 @@ print_info ""
 # Change to the experiment directory
 cd "$REPO_ROOT/ark-iesp/bench/e2e"
 
+# Update dependencies before building
+print_info "Updating Cargo dependencies..."
+cargo update
+
 # Run the experiment and capture output
 print_info "Running: RUST_LOG=info cargo run --release"
 print_info "This may take a while..."

@@ -63,6 +63,10 @@ print_info ""
 # Change to the experiment directory
 cd "$REPO_ROOT/halo2"
 
+# Update dependencies before building
+print_info "Updating Cargo dependencies..."
+cargo update
+
 # Run the experiment and capture output
 print_info "Running: cargo run --release --example universal-circuit"
 print_info "This may take a while..."
