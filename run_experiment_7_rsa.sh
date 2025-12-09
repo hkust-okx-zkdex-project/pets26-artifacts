@@ -60,23 +60,23 @@ print_info "Output will be saved to: $OUTPUT_FILE"
 print_info ""
 
 # Change to the experiment directory
-cd "$REPO_ROOT/benchmarkEdDSA"
+cd "$REPO_ROOT/rsa_accumulator"
 
 # Build the Go program
 print_info "Building Go program..."
 go build -o test
 
 # Check if test executable exists after build
-if [ ! -f "./test" ] && [ ! -f "./test.exe" ]; then
+if [ ! -f "./rsa_accumulator" ] && [ ! -f "./rsa_accumulator.exe" ]; then
     print_error "Build failed: test executable not found"
     exit 1
 fi
 
-# Determine the executable name (test or test.exe)
-if [ -f "./test" ]; then
-    TEST_EXEC="./test"
-elif [ -f "./test.exe" ]; then
-    TEST_EXEC="./test.exe"
+# Determine the executable name (rsa_accumulator or rsa_accumulator.exe)
+if [ -f "./rsa_accumulator" ]; then
+    TEST_EXEC="./rsa_accumulator"
+elif [ -f "./rsa_accumulator.exe" ]; then
+    TEST_EXEC="./rsa_accumulator.exe"
 fi
 
 # Run the experiment and capture output
