@@ -64,7 +64,7 @@ cd "$REPO_ROOT/rsa_accumulator"
 
 # Build the Go program
 print_info "Building Go program..."
-go build -o test
+go build -o rsa_accumulator
 
 # Check if test executable exists after build
 if [ ! -f "./rsa_accumulator" ] && [ ! -f "./rsa_accumulator.exe" ]; then
