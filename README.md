@@ -182,6 +182,7 @@ This experiment benchmarks the EdDSA signature verifications from the official b
 ### Experiment 7: RSA Accumulator benchmarks (gnark)
 
 This experiment benchmarks the RSA accumulators and MultiSwap in golang, the MultiSwap is implemented with gnark.
+Note that this experiment requires a large memory for generating precomputation table for RSA accumualtor. 
 
 ```bash
 ./run_experiment_7_rsa.sh
@@ -222,9 +223,11 @@ Implementation of matrix lookup according to the number of distinct segments sel
 ### halo2-link-circuit
 Implementation of the link circuit that combines PlonK and Groth16 proofs. Used in Experiment 5.
 
-### Future Experiments
+### benchmarkEdDSA
+Benchmarks for EdDSA signatures with gnark
 
-Experiments 6 (EdDSA benchmark) and 7 (RSA Accumulator) are under development and will be documented in future updates.
+### rsa_accumulator
+Benchmarks for RSA accumulator and MultiSwap
 
 ## Troubleshooting
 
