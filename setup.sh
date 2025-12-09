@@ -554,14 +554,14 @@ if [ -f "rsa_accumulator/go.mod" ]; then
     cd "$ORIGINAL_DIR" || exit 1
 fi
 
-if [ -f "VTLP/go.mod" ]; then
-    if [ -f "VTLP/go.sum" ]; then
-        print_info "go.sum exists for VTLP, dependencies may already be downloaded"
-        print_info "Verifying/updating dependencies for VTLP..."
+if [ -f "benchmarkEdDSA/go.mod" ]; then
+    if [ -f "benchmarkEdDSA/go.sum" ]; then
+        print_info "go.sum exists for benchmarkEdDSA, dependencies may already be downloaded"
+        print_info "Verifying/updating dependencies for benchmarkEdDSA..."
     else
-        print_info "Downloading dependencies for VTLP..."
+        print_info "Downloading dependencies for benchmarkEdDSA..."
     fi
-    cd VTLP || exit 1
+    cd benchmarkEdDSA || exit 1
     go mod download
     cd "$ORIGINAL_DIR" || exit 1
 fi

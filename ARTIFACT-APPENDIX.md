@@ -194,7 +194,7 @@ The script performs the following operations:
 
 6. **Downloads Go dependencies**:
    - Downloads Go modules for `rsa_accumulator`
-   - Downloads Go modules for `VTLP`
+   - Downloads Go modules for `benchmarkEdDSA`
 
 After running the setup script, reload your shell environment to make Rust and Go
 available in your current session. For **bash** users:
@@ -204,7 +204,7 @@ source ~/.bashrc
 ```
 
 Alternatively, you can simply restart your terminal to load the updated
-environment variables from your shell configuration file.
+environment variables from your shell configuration file.·
 
 ### Testing the Environment (Required for Functional and Reproduced badges)
 
