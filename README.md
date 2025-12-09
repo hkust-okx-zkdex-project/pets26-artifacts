@@ -21,8 +21,8 @@ The experiments are organized into automated scripts that compile the necessary 
 ├── ark-segmentlookup/           # Matrix lookup by distinct segments (Experiment 3)
 ├── halo2/                       # PlonK implementation with matrix lookup (Experiments 2, 4)
 ├── halo2-link-circuit/          # Link circuit implementation (Experiment 5)
+├── bencheddsa/                  # EdDSA benchmarks (Experiment 6)
 ├── rsa_accumulator/             # RSA Accumulator (future experiments)
-├── VTLP/                        # EdDSA benchmark with VTLP (future experiments)
 ├── results/                     # Output directory for experiment results
 ├── setup.sh                     # Environment setup script
 └── run_experiment_*.sh          # Individual experiment execution scripts
