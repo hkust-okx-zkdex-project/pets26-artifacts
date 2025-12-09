@@ -50,61 +50,98 @@ here but rather in the corresponding submission field on HotCRP.
 
 ### Hardware Requirements (Required for Functional and Reproduced badges)
 
-Replace this with the following:
+1. **Minimal hardware requirements**: Can run on a laptop (No special
+   hardware requirements).
 
-1. A list of the _minimal hardware requirements_ to execute your artifact. If no
-   specific hardware is needed, then state "Can run on a laptop (No special
-   hardware requirements)". You may state how a researcher could gain access to
-   that hardware, e.g., by buying, renting, or even emulating it.
-2. When applying for the "Reproduced" badge, list _the specifications of the
-   hardware_ on which the experiments reported in the paper were performed. This
-   is especially relevant in cases were results might be influenced by the
-   hardware used (e.g., latency, bandwidth, throughput experiments, etc.).
+2. **Hardware specifications for reproduced experiments**: All performance
+   evaluations reported in the paper were conducted on a single workstation with
+   the following specifications:
+   - **Processor**: Intel Xeon E-2174G, featuring 4 physical cores and 8 logical
+     threads enabled through Intel's Hyper-Threading technology, with a clock speed
+     of 3.80 GHz
+   - **Memory**: 128 GiB of DDR4 RAM operating at 2666 MHz
+   - **Storage**: 1 TB NVMe SSD as primary storage
+
 
 ### Software Requirements (Required for Functional and Reproduced badges)
 
-Replace this with the software required to run your artifact and its versions,
-as follows.
+1. **Operating System**: Ubuntu 20.04.6 LTS with 64-bit Linux kernel
+   (5.15.0-91-generic). The artifact should be compatible with other Linux
+   distributions, but all experiments were conducted on Ubuntu 20.04.6 LTS.
 
-1. List the OS you used to run your artifact, along with its version (e.g.,
-   Ubuntu 22.04). If your artifact can only run on a specific OS or a specific
-   OS version, list it and explain why here. In general, your artifact reviewers
-   will probably have access to a machine with a different OS or different OS
-   version than yours; they should still be able to run appropriately packaged
-   artifacts.
-2. List the OS packages that your artifact requires, along with their versions.
-3. Artifact packaging: If you use a container runtime (e.g., Docker) to run the
-   artifact, list the container runtime and its version (e.g., Docker 23.0.3).
-   If you use VMs, list the hypervisor (e.g., VirtualBox) to run the artifact.
-4. List the programming language compiler or interpreter you used to run your
-   artifact (e.g., Python 3.13.7). Your Docker image or VM image should have
-   this version of the programming languages installed already. Your Dockerfile
-   should start from a base image with this programming language version.
-5. List packages that your artifact depends on, along with their versions. For
-   example, Python-based privacy-preserving machine learning artifacts typically
-   require `numpy`, `scipy`, etc. You may point to a file in your artifact with
-   this list, such as a `requirements.txt` file. If you rely on proprietary
-   software (e.g. Matlab R2025a), list this here and consider providing access
-   to reviewers through HotCRP.
-6. List any Machine Learning Models required to run your artifact, along with
-   their versions. If your model is hosted on a different repository, such as on
-   Zenodo, then your artifact should download it automatically (same for
-   datasets). If a required ML model is _not_ in your artifact, provide a dummy
-   model to demonstrate the functionality of the rest of your artifact.
-7. List any datasets required to run your artifact. If any required dataset is
-   not in your artifact, you should provide a synthetic dataset that showcases
-   the expected data format.
+2. **OS Packages**: The following system packages are required:
+   - `build-essential` (for C/C++ compilation tools)
+   - `curl` (for downloading dependencies)
+   - `git` (for cloning repositories and managing submodules)
+   - `pkg-config` (for library configuration)
+   - `libssl-dev` (for SSL/TLS support)
+   - `ca-certificates` (for SSL certificate verification)
+   - `gnupg` (for package verification)
+   - `lsb-release` (for system information)
+
+3. **Programming Languages and Compilers**:
+   - **Rust**: Stable toolchain version 1.82.0 (or compatible version >= 1.82.0).
+     The artifact uses Rust for most components, including the PlonK proving
+     framework, matrix lookup arguments, and segment lookup implementations.
+     Rust can be installed via `rustup` (https://rustup.rs/).
+   - **Go (Golang)**: Version 1.19 or later. The artifact uses Go for the Shared
+     Logic Components implemented in Groth16 using the gnark library. Go can be
+     downloaded from https://go.dev/dl/.
+
+4. **Rust Dependencies**: The artifact relies on the following Rust crates and
+   libraries (versions are specified in the `Cargo.toml` files):
+   - **arkworks libraries** (version 0.5.0): Used for finite field arithmetic,
+     elliptic curve operations, polynomial arithmetic, and BN256 curve
+     functionality. Key crates include:
+     - `ark-ff` (finite field operations)
+     - `ark-ec` (elliptic curve operations)
+     - `ark-poly` (polynomial arithmetic)
+     - `ark-std` (standard library traits)
+     - `ark-serialize` (serialization)
+     - `ark-bn254` (BN254 curve implementation)
+   - **halo2 library** (version 0.3.0): The foundational PlonK proving framework
+     from PSE (Privacy & Scaling Explorations). This library applies a KZG
+     polynomial commitment scheme over the BN256 elliptic curve.
+   - **halo2curves** (version 0.6.1): Provides BN256 curve functionality for halo2.
+   - **Rayon** (version 1.10.0): Used for parallelism in Rust projects. The
+     library automatically detects and utilizes all available logical cores on
+     the workstation. All experiments are conducted with multiple cores in
+     parallel unless otherwise noted.
+   - **merlin** (version 3.0.0): Used for transcript generation in zero-knowledge
+     proofs.
+   - **blake2** (version 0.10.6): Cryptographic hash function implementation.
+
+5. **Go Dependencies**: The artifact uses the following Go packages (versions
+   are specified in the `go.mod` files):
+   - **gnark** (version 0.7.0): Groth16 proving system implementation. The artifact
+     uses a fork from `github.com/bnb-chain/gnark` (commit
+     `0d81c67d080a`) as specified in the `replace` directives in `go.mod` files.
+   - **gnark-crypto** (version 0.10.0): Cryptographic primitives for gnark. The
+     artifact uses a fork from `github.com/bnb-chain/gnark-crypto` (commit
+     `7c643ad11891`) as specified in the `replace` directives.
+   - Additional dependencies are automatically resolved via `go mod download`.
+
+6. **Artifact Packaging**: No container runtime or VM is required. The artifact
+   can be run directly on a compatible Linux system after installing the
+   dependencies listed above.
+
+7. **Machine Learning Models**: Not applicable. This artifact does not use any
+   machine learning models.
+
+8. **Datasets**: Not applicable. This artifact does not require external
+   datasets. All experiments use synthetic data generated during execution.
 
 ### Estimated Time and Storage Consumption (Required for Functional and Reproduced badges)
 
-Replace the following with estimated values for:
+The following estimates are for running all experiments to reproduce the results
+reported in the paper:
 
-- The overall human and compute times required to run the artifact.
-- The overall disk space consumed by the artifact.
+- **Overall time**: Approximately 2 hours.
+- **Overall disk space**: Approximately 500 GB of disk space.
 
-This helps reviewers schedule the evaluation in their time plan and others in
-general to see if everything is running as intended. This should also be
-specified at a finer granularity for each experiment (see below).
+These estimates are conservative to ensure sufficient resources are available.
+Actual consumption may vary depending on the specific experiments run and the
+system configuration.
 
 ## Environment (Required for all badges)
 
@@ -114,37 +151,60 @@ everything and how to verify that everything is set up correctly.
 
 ### Accessibility (Required for all badges)
 
-Replace the following by a description of how to access your artifact via
-persistent sources. Valid hosting options are institutional and third-party
-digital repositories (e.g., GitHub, Gitlab, BitBucket, Zenodo, Figshare, etc.).
-Please do not use personal web pages or cloud storage services like Google
-Drive, Dropbox, etc.
-
-Note that once your artifact evaluation is finalized and a badge decision has
-been made, artifact chairs will collect a stable and persistent reference to
-your artifact to list on the website. For version-controlled repositories (e.g.,
-Git repositories), this will be a specific commit-id or tag.
-
-You _should not_ link to a specific commit here at submission time, as changes
-will likely happen during the evaluation process to address the reviewers'
-feedback, resulting in the link being out-of-date. Instead, you may link to the
-latest commit in your branch (e.g. main) as follows:
-https://github.com/PoPETS-AEC/example-docker-python-pip/tree/main
+Access via GitHub link: [https://github.com/hkust-okx-zkdex-project/pets26-artifacts/tree/main](https://github.com/hkust-okx-zkdex-project/pets26-artifacts/tree/main)
 
 ### Set up the environment (Required for Functional and Reproduced badges)
 
-Replace the following by a description of how one should set up the environment
-for your artifact, including downloading and installing dependencies and the
-installation of the artifact itself (i.e., from the very first download or clone
-command one should perform). Be as specific as possible here. If possible, use
-code segments to simplify the workflow, e.g.,
+The setup script (`setup.sh`) automates the installation of all required
+dependencies. Run it from the repository root:
 
 ```bash
-git clone git@github.com:PoPETS-AEC/example-docker-python-pip.git
-docker build -t example-docker-python-pip:main .
+./setup.sh
 ```
 
-Describe the expected results where it makes sense to do so.
+The script performs the following operations:
+
+1. **Installs system packages** (via `apt-get` on Ubuntu/Debian):
+   - `build-essential` (C/C++ compilation tools)
+   - `curl` (for downloading dependencies)
+   - `git` (for repository management)
+   - `pkg-config` (for library configuration)
+   - `libssl-dev` (SSL/TLS development libraries)
+   - `ca-certificates` (SSL certificate store)
+   - `gnupg` (GNU Privacy Guard for package verification)
+   - `lsb-release` (Linux Standard Base release information)
+
+2. **Installs Rust toolchain** (version 1.82.0 or later):
+   - Installs `rustup` if not present
+   - Installs Rust 1.82.0 via rustup
+   - Configures Rust/Cargo environment variables
+
+3. **Installs Go** (version 1.19.13):
+   - Downloads and installs Go 1.19.13 to `/usr/local/go`
+   - Adds Go binary path to environment
+
+4. **Initializes Git submodules**:
+   - Syncs submodule URLs
+   - Initializes and updates all submodules recursively
+
+5. **Fetches Rust dependencies**:
+   - Downloads dependencies for `ark-iesp`
+   - Downloads dependencies for `halo2`
+   - Downloads dependencies for `halo2-link-circuit`
+
+6. **Downloads Go dependencies**:
+   - Downloads Go modules for `rsa_accumulator`
+   - Downloads Go modules for `VTLP`
+
+After running the setup script, reload your shell environment to make Rust and Go
+available in your current session. For **bash** users:
+
+```bash
+source ~/.bashrc
+```
+
+Alternatively, you can simply restart your terminal to load the updated
+environment variables from your shell configuration file.
 
 ### Testing the Environment (Required for Functional and Reproduced badges)
 
