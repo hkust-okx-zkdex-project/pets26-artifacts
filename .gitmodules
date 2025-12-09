@@ -10,6 +10,7 @@
 [submodule "rsa_accumulator"]
 	path = rsa_accumulator
 	url = https://github.com/hkust-okx-zkdex-project/rsa_accumulator.git
+	branch = benchOKX
 [submodule "ark-segmentlookup"]
 	path = ark-segmentlookup
 	url = https://github.com/hkust-okx-zkdex-project/ark-segmentlookup.git
