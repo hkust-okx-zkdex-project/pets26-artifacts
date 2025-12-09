@@ -10,6 +10,7 @@ This artifact package enables reviewers to reproduce the key performance results
 - **PlonK with matrix lookup benchmarks** (for Figure 4a, 4b, 4c, and partial 4d)
 - **Pure PlonK monolithic circuit** (for partial Figure 4d)
 - **Link circuit combining PlonK with Groth16** (for link circuit performance evaluation)
+- **Basic cost including EdDSA signatures and RSA memberships with Groth16** (for link circuit performance evaluation)
 
 The experiments are organized into automated scripts that compile the necessary components, run the benchmarks, and save results to timestamped output files for analysis.
 
@@ -22,7 +23,7 @@ The experiments are organized into automated scripts that compile the necessary 
 ├── halo2/                       # PlonK implementation with matrix lookup (Experiments 2, 4)
 ├── halo2-link-circuit/          # Link circuit implementation (Experiment 5)
 ├── bencheddsa/                  # EdDSA benchmarks (Experiment 6)
-├── rsa_accumulator/             # RSA Accumulator (future experiments)
+├── rsa_accumulator/             # RSA Accumulator (Experiment 7)
 ├── results/                     # Output directory for experiment results
 ├── setup.sh                     # Environment setup script
 └── run_experiment_*.sh          # Individual experiment execution scripts
@@ -164,6 +165,32 @@ This experiment benchmarks the link circuit that combines PlonK with Groth16 acr
 This experiment tests 5 different parameter combinations (k=11 to k=15) with 5 iterations each for statistical reliability.
 
 **Corresponds to:** Link circuit performance evaluation
+
+### Experiment 6: EdDSA signatures (gnark)
+
+This experiment benchmarks the EdDSA signature verifications from the official benchmarks in gnark.
+
+```bash
+./run_experiment_6_eddsa.sh
+```
+
+**Output:** 
+- Main results: `results/experiment_6_eddsa_<timestamp>.txt`
+
+**Corresponds to:** EdDSA signatures
+
+### Experiment 7: RSA Accumulator benchmarks (gnark)
+
+This experiment benchmarks the RSA accumulators and MultiSwap in golang, the MultiSwap is implemented with gnark.
+
+```bash
+./run_experiment_7_rsa.sh
+```
+
+**Output:** 
+- Main results: `results/experiment_7_rsa_<timestamp>.txt`
+
+**Corresponds to:** RSA accumulators and MultiSwap
 
 ## Understanding Results
 
