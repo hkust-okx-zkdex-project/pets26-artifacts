@@ -197,7 +197,7 @@ Implementation of the link circuit that combines PlonK and Groth16 proofs. Used 
 
 ### Future Experiments
 
-Experiments 6 (EdDSA benchmark with VTLP) and 7 (RSA Accumulator) are under development and will be documented in future updates.
+Experiments 6 (EdDSA benchmark) and 7 (RSA Accumulator) are under development and will be documented in future updates.
 
 ## Troubleshooting
 
