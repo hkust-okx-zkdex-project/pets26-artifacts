@@ -144,8 +144,8 @@ here but rather in the corresponding submission field on HotCRP.
 The following estimates are for running all experiments to reproduce the results
 reported in the paper:
 
-- **Overall time**: Approximately 2 hours.
-- **Overall disk space**: Approximately 500 GB of disk space.
+- **Overall time**: Approximately 2-3 hours.
+- **Overall disk space**: Approximately 100 GB of disk space.
 
 These estimates are conservative to ensure sufficient resources are available.
 Actual consumption may vary depending on the specific experiments run and the
@@ -216,29 +216,25 @@ environment variables from your shell configuration file.·
 
 ### Testing the Environment (Required for Functional and Reproduced badges)
 
-Replace the following by a description of the basic functionality tests to check
-if the environment is set up correctly. These tests could be unit tests,
-training an ML model on very low training data, etc. If these tests succeed, all
-required software should be functioning correctly. Use code segments to simplify
-the workflow, e.g.,
+Run the following quick checks after `./setup.sh`:
 
-Launch the Docker container, attach the current working directory (i.e., run
-from the root of the cloned git repository) as a volume, set the context to be
-that volume, and provide an interactive bash terminal:
+1. Verify toolchains are available (expect Rust 1.82+ and Go 1.19+):
+   ```bash
+   rustc --version
+   cargo --version
+   go version
+   ```
 
-```bash
-docker run --rm -it -v ${PWD}:/workspaces/example-docker-python-pip \
-    -w /workspaces/example-docker-python-pip \
-    --entrypoint bash example-docker-python-pip:main
-```
+2. Ensure experiment scripts are executable:
+   ```bash
+   chmod +x run_experiment_*.sh
+   ```
 
-Then within the Docker container, run:
-
-```bash
-./test.sh
-```
-
-Include the expected output.
+3. Smoke test the toolchain by running the shortest experiment script (records output to `results/`):
+   ```bash
+   ./run_experiment_1_link_protocol.sh
+   ```
+   Expected: a timestamped log file `results/experiment_1_link_protocol_<timestamp>.txt` is created without errors.
 
 ## Artifact Evaluation (Required for Functional and Reproduced badges)
 
@@ -252,82 +248,115 @@ describe the experiments that support your claims in the subsection after that.
 List all your paper's results and claims that are supported by your submitted
 artifacts.
 
-#### Main Result 1: Name
+#### Main Result 1: Link Protocol Performance
 
-Describe the results in 1 to 3 sentences. Mention what the independent and
-dependent variables are; independent variables are the ones on the x-axes of
-your figures, whereas the dependent ones are on the y-axes. By varying the
-independent variable (e.g., file size) in a given manner (e.g., linearly), we
-expect to see trends in the dependent variable (e.g., runtime, communication
-overhead) vary in another manner (e.g., exponentially). Refer to the related
-sections, figures, and/or tables in your paper and reference the experiments
-that support this result/claim. See example below.
+The Link protocol exhibits quasi-linear growth in proving time ($O(\log n + k \log k)$) as the degree of the linked polynomials increases. We benchmark the protocol with one polynomial of fixed degree $2^{16}$ and another varying from $2^{10}$ to $2^{20}$. The proving time increases from 1.1s to 24.1s as shown in **Table 1** of the paper. This result is reproduced by [Experiment 1](#experiment-1-link-protocol).
 
-#### Main Result 2: Example Name
+#### Main Result 2: Matrix Lookup vs. Monolithic Plonk Efficiency
 
-Our paper claims that when varying the file size linearly, the runtime also
-increases linearly. This claim is reproducible by executing our
-[Experiment 2](#experiment-2-example-name). In this experiment, we change the
-file size linearly, from 2KB to 24KB, at intervals of 2KB each, and we show that
-the runtime also increases linearly, reaching at most 1ms. We report these
-results in "Figure 1a" and "Table 3" (Column 3 or Row 2) of our paper.
+Matrix lookup dominates the prover overhead (approx. 95% of computation) compared to Plonk operations (5%) as shown in **Figure 4(a)**. Despite this overhead, the system scales sub-linearly with the number of supported transaction types (**Figure 4(c)**). Compared to monolithic Plonk (**Figure 4(d)**), our approach is more efficient when the number of transaction types exceeds 32–64, as monolithic circuits grow linearly while our approach grows sub-linearly. These results are reproduced by [Experiment 2](#experiment-2-plonk--matrix-lookup) and [Experiment 4](#experiment-4-monolithic-plonk).
+
+#### Main Result 3: Impact of Transaction Diversity
+
+Prover time grows quasi-linearly with the number of *distinct* transaction types selected within a batch, as shown in **Figure 4(b)**. When selecting 1 transaction type versus 1024 distinct types in a batch of size 1024, the proving time increases, demonstrating that restricting transaction variety improves efficiency. This result is reproduced by [Experiment 3](#experiment-3-matrix-lookup-with-distinct-segments).
+
+#### Main Result 4: Link Circuit Efficiency
+
+For a realistic zkRollup scenario (1024 transactions), the Link circuit achieves a proving time of approximately 1167.8 ms and verification time of 3.2 ms. This demonstrates the practical efficiency of the composition between heterogeneous proof systems. This result is reproduced by [Experiment 5](#experiment-5-link-circuit).
+
+#### Main Result 5: Cryptographic Primitive Performance
+
+The system efficiently handles cryptographic operations: EdDSA signature verification and RSA accumulator updates. The RSA accumulator proving time scales linearly with the number of users ($2^{14}$ to $2^{18}$), as shown in **Table 2**. This is reproduced by [Experiment 6](#experiment-6-eddsa-benchmark) and [Experiment 7](#experiment-7-rsa-accumulator).
 
 ### Experiments
-List each experiment to execute to reproduce your results. Describe:
- - How to execute it in detailed steps.
- - What the expected result is.
- - How long it takes to execute in human and compute times (approximately).
- - How much space it consumes on disk (approximately) (omit if <10GB).
- - Which claim and results does it support, and how.
 
-#### Experiment 1: Name
-- Time: replace with estimate in human-minutes/hours + compute-minutes/hours.
-- Storage: replace with estimate for disk space used (omit if <10GB).
+List each experiment to execute to reproduce your results.
 
-Provide a short explanation of the experiment and expected results. Describe
-thoroughly the steps to perform the experiment and to collect and organize the
-results as expected from your paper (see example below). Use code segments to
-simplify the workflow, as follows.
+#### Experiment 1: Link Protocol
+
+- **Time**: ~10 minutes
+- **Storage**: 10 GB
+
+This experiment reproduces **Main Result 1** (Table 1). It benchmarks the Link protocol between two polynomials of varying degrees.
 
 ```bash
-python3 experiment_1.py
+./run_experiment_1_link_protocol.sh
 ```
 
-#### Experiment 2: Example Name
+#### Experiment 2: Plonk + Matrix Lookup
 
-- Time: 10 human-minutes + 3 compute-hours
-- Storage: 20GB
+- **Time**: ~30 minutes
+- **Storage**: 10 GB
 
-This example experiment reproduces
-[Main Result 2: Example Name](#main-result-2-example-name), the following script
-will run the simulation automatically with the different parameters specified in
-the paper. (You may run the following command from the example Docker image.)
+This experiment reproduces **Main Result 2** (Figure 4(a), 4(c), and partial 4(d)). It runs the `sublonk` benchmark which evaluates the performance of the Plonk + matrix lookup system with varying lookup table sizes (total transaction types).
 
 ```bash
-python3 main.py
+./run_experiment_2_plonk_matrix_lookup.sh
 ```
 
-Results from this example experiment will be aggregated over several iterations
-by the script and output directly in raw format along with variances and
-standard deviations in the `output-folder/` directory. You will also find there
-the plots for "Figure 1a" in `.pdf` format and the table for "Table 3" in `.tex`
-format. These can be directly compared to the results reported in the paper, and
-should not quantitatively vary by more than 5% from expected results.
+#### Experiment 3: Matrix Lookup with Distinct Segments
+
+- **Time**: ~15 minutes
+- **Storage**: 10 GB
+
+This experiment reproduces **Main Result 3** (Figure 4(b)). It benchmarks the impact of the number of *distinct* transaction types selected in a batch on the prover time.
+
+```bash
+./run_experiment_3_plonk_segments.sh
+```
+
+#### Experiment 4: Monolithic Plonk
+
+- **Time**: ~30 minutes
+- **Storage**: 10 GB
+
+This experiment reproduces the monolithic Plonk baseline for **Main Result 2** (Figure 4(d)). It runs a pure Plonk universal circuit to compare against the matrix lookup approach.
+
+```bash
+./run_experiment_4_pure_plonk.sh
+```
+
+#### Experiment 5: Link Circuit
+
+- **Time**: ~10 minutes
+- **Storage**: 10 GB
+
+This experiment reproduces **Main Result 4**. It runs the end-to-end benchmark for the Link circuit with multiple parameter combinations to verify the efficiency of linking heterogeneous proofs.
+
+```bash
+./run_experiment_5_link_circuit.sh
+```
+
+#### Experiment 6: EdDSA Benchmark
+
+- **Time**: ~30 minutes
+- **Storage**: 10 GB
+
+This experiment reproduces part of **Main Result 5**. It benchmarks the EdDSA signature verification component.
+
+```bash
+./run_experiment_6_eddsa.sh
+```
+
+#### Experiment 7: RSA Accumulator
+
+- **Time**: ~30 minutes
+- **Storage**: 10 GB
+
+This experiment reproduces **Main Result 5** (Table 2). It benchmarks the RSA accumulator proving time for different numbers of users.
+
+```bash
+./run_experiment_7_rsa.sh
+```
 
 
 ## Limitations (Required for Functional and Reproduced badges)
 
-Describe which steps, experiments, results, graphs, tables, etc. are _not
-reproducible_ with the provided artifact. Explain why this is not
-included/possible and argue why the artifact should _still_ be evaluated for the
-respective badges.
+We cannot produce the artifacts of an end-to-end zkRollup performance as shown in the paper due to hardware constraints. The full end-to-end system requires significant computational resources and memory that exceed standard workstation capabilities (specifically for the combined proving of all components at full scale). As a result, the numbers for the complete end-to-end system performance reported in the paper are obtained by mathematical inferences based on the performance of individual components (Link protocol, Plonk + matrix lookup, EdDSA, RSA Accumulator) which are benchmarked individually in this artifact. All individual component benchmarks are fully reproducible.
 
 ## Notes on Reusability (Encouraged for all badges)
 
-First, this section might not apply to your artifacts. Describe how your
-artifact can be used beyond your research paper, e.g., as a general framework.
-The overall goal of artifact evaluation is not only to reproduce and verify your
-research but also to help other researchers to re-use and extend your artifacts.
-Discuss how your artifacts can be adapted to other settings, e.g., more input
-dimensions, other datasets, and other behavior, through replacing individual
-modules and functionality or running more iterations of a specific module.
+The components of the Gryphes framework are designed to be modular and can be used as individual components in other projects:
+
+- **Matrix Lookup**: The matrix lookup implementation (in `sublonk` and `ark-segmentlookup`) can be used to efficiently handle diverse application logic in other SNARK-based systems, enabling sub-linear scaling with the number of supported circuit types.
+- **Link Protocol**: The Link protocol (in `halo2-link-circuit` and `ark-iesp`) provides a generic mechanism for composing heterogeneous SNARKs (e.g., combining Plonk with Groth16) and can be reused to link proofs from different proving systems.
