@@ -7,26 +7,8 @@ Requested Badge(s):
   - [ ] **Functional**
   - [x] **Reproduced**
 
-Authors can provide this content _either_ as a separate file in their artifact
-_or_ as part of their existing documentation (e.g., `README.md`). In the latter
-case, you should have the same section titles as in this template.
 
-This template includes several placeholders. When filling in this template for
-their artifact, the authors should:
-
-1. Remove this note.
-2. Delete the sections that are _not_ required for the badge(s) they are
-   applying for.
-3. Omit suffixes of the form "(required/encouraged for badge ...)" from the
-   section titles.
-4. Authors should not leave the placeholder descriptions initially provided with
-   this file into the submitted version with their artifact.
-
-While this template is provided for artifact review, you should write your
-instructions for someone trying to reuse your artifact in the future (i.e., not
-an artifact reviewer).
-
-## Description (Required for all badges)
+## Description
 
 1. **Paper**: Gryphes: Hybrid Proofs for Modular SNARKs with Applications to zkRollups
 
@@ -41,7 +23,7 @@ an artifact reviewer).
 
 2. This artifact provides the code, scripts, and instructions to reproduce all experimental results reported in Section 6 of the paper.
 
-### Security/Privacy Issues and Ethical Concerns (Required for all badges)
+### Security/Privacy Issues and Ethical Concerns
 
 We are not aware of any security or privacy risks when running our artifacts.
 The artifact consists of cryptographic proof systems and SNARK implementations
@@ -49,14 +31,9 @@ that do not disable any security mechanisms, run vulnerable code, or access
 sensitive data. The artifact does not involve user studies or collection of
 personal data.
 
-## Basic Requirements (Required for Functional and Reproduced badges)
+## Basic Requirements
 
-For both sections below, if you are giving reviewers remote access to special
-hardware (e.g., Intel SGX v2.0) or proprietary software (e.g., Matlab R2025a)
-for the purpose of the artifact evaluation, do not provide these instructions
-here but rather in the corresponding submission field on HotCRP.
-
-### Hardware Requirements (Required for Functional and Reproduced badges)
+### Hardware Requirements
 
 1. **Minimal hardware requirements**: Can run on a laptop (No special
    hardware requirements).
@@ -71,7 +48,7 @@ here but rather in the corresponding submission field on HotCRP.
    - **Storage**: 1 TB NVMe SSD as primary storage
 
 
-### Software Requirements (Required for Functional and Reproduced badges)
+### Software Requirements
 
 1. **Operating System**: Ubuntu 20.04.6 LTS with 64-bit Linux kernel
    (5.15.0-91-generic). The artifact should be compatible with other Linux
@@ -139,7 +116,7 @@ here but rather in the corresponding submission field on HotCRP.
 8. **Datasets**: Not applicable. This artifact does not require external
    datasets. All experiments use synthetic data generated during execution.
 
-### Estimated Time and Storage Consumption (Required for Functional and Reproduced badges)
+### Estimated Time and Storage Consumption
 
 The following estimates are for running all experiments to reproduce the results
 reported in the paper:
@@ -151,17 +128,13 @@ These estimates are conservative to ensure sufficient resources are available.
 Actual consumption may vary depending on the specific experiments run and the
 system configuration.
 
-## Environment (Required for all badges)
+## Environment
 
-In the following, describe how to access your artifact and all related and
-necessary data and software components. Afterward, describe how to set up
-everything and how to verify that everything is set up correctly.
-
-### Accessibility (Required for all badges)
+### Accessibility
 
 Access via GitHub link: [https://github.com/hkust-okx-zkdex-project/pets26-artifacts/tree/main](https://github.com/hkust-okx-zkdex-project/pets26-artifacts/tree/main)
 
-### Set up the environment (Required for Functional and Reproduced badges)
+### Set up the environment
 
 The setup script (`setup.sh`) automates the installation of all required
 dependencies. Run it from the repository root:
@@ -212,9 +185,9 @@ source ~/.bashrc
 ```
 
 Alternatively, you can simply restart your terminal to load the updated
-environment variables from your shell configuration file.·
+environment variables from your shell configuration file.
 
-### Testing the Environment (Required for Functional and Reproduced badges)
+### Testing the Environment
 
 Run the following quick checks after `./setup.sh`:
 
@@ -236,7 +209,7 @@ Run the following quick checks after `./setup.sh`:
    ```
    Expected: a timestamped log file `results/experiment_1_link_protocol_<timestamp>.txt` is created without errors.
 
-## Artifact Evaluation (Required for Functional and Reproduced badges)
+## Artifact Evaluation
 
 This section should include all the steps required to evaluate your artifact's
 functionality and validate your paper's key results and claims. Therefore,
@@ -350,11 +323,11 @@ This experiment reproduces **Main Result 5** (Table 2). It benchmarks the RSA ac
 ```
 
 
-## Limitations (Required for Functional and Reproduced badges)
+## Limitations
 
 We cannot produce the artifacts of an end-to-end zkRollup performance as shown in the paper due to hardware constraints. The full end-to-end system requires significant computational resources and memory that exceed standard workstation capabilities (specifically for the combined proving of all components at full scale). As a result, the numbers for the complete end-to-end system performance reported in the paper are obtained by mathematical inferences based on the performance of individual components (Link protocol, Plonk + matrix lookup, EdDSA, RSA Accumulator) which are benchmarked individually in this artifact. All individual component benchmarks are fully reproducible.
 
-## Notes on Reusability (Encouraged for all badges)
+## Notes on Reusability
 
 The components of the Gryphes framework are designed to be modular and can be used as individual components in other projects:
 
