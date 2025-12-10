@@ -27,11 +27,19 @@ instructions for someone trying to reuse your artifact in the future (i.e., not
 an artifact reviewer).
 
 ## Description (Required for all badges)
-Replace this with the following:
 
-1. List the paper that the artifact relates to (i.e., paper title, authors,
-   year, or even a BibTex cite).
-2. A short description of your artifact and how it is relevant to your paper.
+1. **Paper**: Gryphes: Hybrid Proofs for Modular SNARKs with Applications to zkRollups
+
+   **Authors**:
+   - Jiajun Xin (jxin@cse.ust.hk), The Hong Kong University of Science and Technology
+   - Xiangan Tian (xtianae@cse.ust.hk), The Hong Kong University of Science and Technology
+   - Christodoulos Pappas (cpappas@connect.ust.hk), The Hong Kong University of Science and Technology
+   - Yongjin Huang (jason.huang@okg.com), OKG
+   - Dimitrios Papadopoulos (dipapado@cse.ust.hk), The Hong Kong University of Science and Technology
+
+   **Year**: 2026
+
+2. This artifact provides the code, scripts, and instructions to reproduce all experimental results reported in Section 6 of the paper.
 
 ### Security/Privacy Issues and Ethical Concerns (Required for all badges)
 
