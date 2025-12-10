@@ -3,8 +3,8 @@
 Paper title: **Gryphes: Hybrid Proofs for Modular SNARKs with Applications to zkRollups**
 
 Requested Badge(s):
-  - [ ] **Available**
-  - [ ] **Functional**
+  - [x] **Available**
+  - [x] **Functional**
   - [x] **Reproduced**
 
 
