@@ -121,7 +121,7 @@ personal data.
 The following estimates are for running all experiments to reproduce the results
 reported in the paper:
 
-- **Overall time**: Approximately 2-3 hours.
+- **Overall time**: Approximately 4-5 hours.
 - **Overall disk space**: Approximately 100 GB of disk space.
 
 These estimates are conservative to ensure sufficient resources are available.
@@ -262,7 +262,7 @@ This experiment reproduces **Main Result 1** (Table 1). It benchmarks the Link p
 
 #### Experiment 2: Plonk + Matrix Lookup
 
-- **Time**: ~30 minutes
+- **Time**: ~2-3 hours
 - **Storage**: 10 GB
 
 This experiment reproduces **Main Result 2** (Figure 4(a), 4(c), and partial 4(d)). It runs the `sublonk` benchmark which evaluates the performance of the Plonk + matrix lookup system with varying lookup table sizes (total transaction types).
