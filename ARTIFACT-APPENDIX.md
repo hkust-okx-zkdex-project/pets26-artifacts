@@ -14,7 +14,7 @@ Requested Badge(s):
 
    **Authors**:
    - Jiajun Xin (jxin@cse.ust.hk), The Hong Kong University of Science and Technology
-   - Xiangan Tian (xtianae@cse.ust.hk), The Hong Kong University of Science and Technology
+   - Samuel Cheung On Tin (xtianae@cse.ust.hk), The Hong Kong University of Science and Technology
    - Christodoulos Pappas (cpappas@connect.ust.hk), The Hong Kong University of Science and Technology
    - Yongjin Huang (jason.huang@okg.com), OKG
    - Dimitrios Papadopoulos (dipapado@cse.ust.hk), The Hong Kong University of Science and Technology
@@ -208,6 +208,10 @@ Run the following quick checks after `./setup.sh`:
    ./run_experiment_1_link_protocol.sh
    ```
    Expected: a timestamped log file `results/experiment_1_link_protocol_<timestamp>.txt` is created without errors.
+
+### Expected Compilation Warnings
+
+When running experiments, you may observe compilation warnings (e.g., unexpected `cfg` condition values like `floor-planner-v1-legacy-pdqsort` and `circuit-params`, Cargo profile warnings, or unused code warnings). These warnings are expected and benign. All experiments will compile and run successfully despite these warnings, and they can be safely ignored during artifact evaluation.
 
 ## Artifact Evaluation
 
