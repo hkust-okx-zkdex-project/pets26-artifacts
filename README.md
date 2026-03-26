@@ -13,3 +13,5 @@ To optimize for both efficiency and adaptability, we propose Gryphes, a hybrid f
 By integrating Gryphes with Groth16 for signatures and RSA accumulators for membership proofs, we build a zkRollup prototype that achieves efficient proving, constant-size proofs, and dynamic support for thousands of transaction types. This includes our matrix lookup implementation incorporated with Plonk, as well as practical optimizations, comprehensive benchmarks, and open-sourced code. Our results demonstrate that Gryphes strikes a very good balance between functionality and efficiency, offering highly expressive and practical zkRollup systems.
 
 **Note for Evaluators:** For detailed artifact evaluation instructions, hardware requirements, and the mapping between experiments and paper claims, please refer to the [ARTIFACT-APPENDIX.md](ARTIFACT-APPENDIX.md).
+
+**Artifact Evaluation Results:** Our artifact was evaluated and awarded all three badges (Available, Functional, Reproduced)(https://petsymposium.org/2026/paperlist.php).
