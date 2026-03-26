@@ -2,4 +2,14 @@
 
 This repository contains the source code, scripts, and artifacts to reproduce the experimental results presented in the paper **"Gryphes: Hybrid Proofs for Modular SNARKs with Applications to zkRollups"**.
 
+The full version of this paper can be found here: [https://eprint.iacr.org/2026/596](https://eprint.iacr.org/2026/596)
+
+In this paper, we address the challenge of constructing a proof system capable of handling multiple computations that involve diverse types of tasks, such as scalable zkRollup applications. A central dilemma in this design is the trade-off between generality and efficiency: while arithmetic circuit-based SNARKs offer fast proofs but limited flexibility, zkVMs provide general-purpose programmability at the cost of considerable overhead for circuit translation. We observe that typical workloads for such applications can be naturally divided into two parts: 
+ - (1) diverse, task and data-dependent application logic
+ - (2) computationally intensive cryptographic operations, e.g., hashes, that are common and repetitive. 
+
+To optimize for both efficiency and adaptability, we propose Gryphes, a hybrid framework that composes matrix lookup, a generalization of lookup arguments, together with SNARK solutions tailored for cryptographic operations. At the heart of Gryphes is a novel and efficient linking protocol, enabling seamless, efficient composition of matrix lookup + Plonk with general commit-and-prove SNARKs. 
+
+By integrating Gryphes with Groth16 for signatures and RSA accumulators for membership proofs, we build a zkRollup prototype that achieves efficient proving, constant-size proofs, and dynamic support for thousands of transaction types. This includes our matrix lookup implementation incorporated with Plonk, as well as practical optimizations, comprehensive benchmarks, and open-sourced code. Our results demonstrate that Gryphes strikes a very good balance between functionality and efficiency, offering highly expressive and practical zkRollup systems.
+
 **Note for Evaluators:** For detailed artifact evaluation instructions, hardware requirements, and the mapping between experiments and paper claims, please refer to the [ARTIFACT-APPENDIX.md](ARTIFACT-APPENDIX.md).
